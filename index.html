@@ -1,1 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>LuxeNest Realty – Luxury Homes & Real Estate</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Google Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <!-- 3D Animation JS Library (Three.js for Carousel Homes) -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
+  <style>
+    body {
+      font-family: 'Open Sans', sans-serif;
+      margin: 0;
+      background: #f8fafc;
+      color: #263238;
+    }
+    header {
+      background: linear-gradient(90deg,#22223b 20%,#4a4e69 100%);
+      color: #fff;
+      padding: 2rem 0 1rem 0;
+      text-align: center;
+      box-shadow: 0 3px 20px rgba(50,50,80,0.1);
+    }
+    header h1 {
+      font-family: 'Montserrat', sans-serif;
+      font-size: 2.5rem;
+      letter-spacing: 2px;
+      margin: 0;
+    }
+    nav {
+      margin-top: 1rem;
+    }
+    nav a {
+      color: #fdfffc;
+      text-decoration: none;
+      margin: 0 1.2rem;
+      font-weight: 600;
+      font-size: 1.13rem;
+      transition: color 0.2s;
+    }
+    nav a:hover { color: #f9957f; }
+
+    /* 3D animation hero section */
+    #threejs-hero {
+      height: 380px;
+      background: linear-gradient(120deg,#e9ecef 60%,#22223b 120%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    /* Search Bar */
+    .search-bar {
+      max-width: 720px;
+      margin: 2rem auto;
+      display: flex;
+      background: #fff;
+      border-radius: 1.5rem;
+      box-shadow: 0 2px 8px 0 #dadce0;
+      padding: 1rem;
+      gap: 1rem;
+      align-items: center;
+      justify-content: center;
+    }
+    .search-bar input, .search-bar select {
+      padding: 0.7rem 1rem;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+      flex: 1;
+    }
+    .search-bar button {
+      background: #22223b;
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1.3rem;
+      border-radius: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .search-bar button:hover {
+      background: #f9957f;
+    }
+
+    /* Listings */
+    #listings {
+      display: flex;
+      flex-wrap: wrap;
+      max-width: 1200px;
+      margin: 2rem auto;
+      gap: 2rem;
+      justify-content: center;
+    }
+    .listing-card {
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 2px 16px rgba(42,44,74,0.11);
+      width: 340px;
+      padding: 1.3rem;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+    .listing-card:hover {
+      transform: scale(1.04) rotateZ(-2deg);
+      box-shadow: 0 8px 32px rgba(42,44,74,0.14);
+    }
+    .listing-image {
+      background: #c5c3c6;
+      border-radius: 0.7rem;
+      width: 100%;
+      height: 180px;
+      margin-bottom: 1rem;
+      background-size: cover;
+      background-position: center;
+    }
+    .listing-card h3 {margin:0; margin-bottom:0.6rem;}
+    .listing-card .price {color: #5c5470; font-weight: 700; font-size: 1.2rem; margin-bottom:0.6rem;}
+    .listing-card .desc {font-size:1rem;color:#5e6687;}
+    .listing-info {display:flex; gap:1.1rem; margin-top: 0.7rem; color: #383f51;}
+    .listing-info span {font-size:0.97rem;}
+    .consult-btn {
+      margin-top: 1.1rem;
+      padding: 0.54rem 0;
+      background: #9a8c98;
+      color: #fff;
+      border: none;
+      border-radius: 11px;
+      font-weight: 600;
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+    .consult-btn:hover {background: #f9957f;}
+    section {max-width: 1100px; margin: 2.7rem auto;}
+
+    /* Testimonials */
+    #testimonials {
+      background: linear-gradient(103deg,#f8fafc 80%,#c9ada7 120%);
+      border-radius: 1.5rem;
+      margin: 3rem auto;
+      padding: 2rem 1rem 0.7rem 1rem;
+      box-shadow: 0 2px 18px #c9ada74d;
+      display: flex;
+      gap: 2.4rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .testimonial {
+      width: 320px;
+      background: #fff;
+      border-radius: 1rem;
+      padding: 1.4rem 1.1rem;
+      box-shadow: 0 2px 8px #e6e6f0;
+      margin-bottom: 1rem;
+    }
+    .testimonial .quote {
+      font-style:italic;
+      font-size:1.08rem;
+      margin-bottom:0.8rem;
+    }
+    .testimonial .author {
+      font-weight:700;
+      color: #4a4e69;
+      font-size:1.02rem;
+    }
+
+    /* About */
+    #aboutus {
+      background: #fff;
+      border-radius: 1.1rem;
+      box-shadow: 0 2px 8px #e8e8ed;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+    #aboutus h2 {margin-top:0;}
+    /* Consultation Form */
+    #consultation {
+      background: #f3f7fa;
+      border-radius: 1.4rem;
+      padding: 2rem 1.4rem;
+      box-shadow: 0 2px 8px #c9ada74a;
+      max-width: 580px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #consultation h2 {margin-top:0;}
+    #consultation input, #consultation textarea {
+      width: 100%;
+      margin: 0.5rem 0;
+      padding: 0.65rem;
+      border-radius: 8px;
+      font-size: 1rem;
+      border: 1px solid #d1d1e0;
+    }
+    #consultation button {
+      background: #22223b;
+      color: #fff;
+      border: none;
+      padding: 0.7rem 1.7rem;
+      border-radius: 10px;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-top: 1rem;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    #consultation button:hover {background: #f9957f;}
+    /* Responsive design */
+    @media (max-width: 900px) {
+      #listings {flex-direction:column; align-items:center;}
+      #testimonials {flex-direction:column;}
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>LuxeNest Realty</h1>
+    <nav>
+      <a href="#listings">Listings</a>
+      <a href="#aboutus">About Us</a>
+      <a href="#consultation">Consultation</a>
+      <a href="#testimonials">Testimonials</a>
+    </nav>
+    <p style="margin-top:0.7rem;font-size:1.16rem;color:#f9957f;font-weight:600;">
+      Dream. Discover. Dwell in Luxury.
+    </p>
+  </header>
+
+  <!-- Hero 3D Animation -->
+  <div id="threejs-hero">
+    <canvas id="three-canvas" style="width: 480px; height: 340px; background: transparent;"></canvas>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="search-bar" id="searchbar">
+    <input type="text" id="location" placeholder="Location (e.g. Mumbai)">
+    <select id="type">
+      <option value="">Any Type</option>
+      <option value="Apartment">Apartment</option>
+      <option value="Villa">Villa</option>
+      <option value="Penthouse">Penthouse</option>
+      <option value="Studio">Studio</option>
+    </select>
+    <input type="number" id="minprice" placeholder="Min Price (₹)" min="0">
+    <input type="number" id="maxprice" placeholder="Max Price (₹)" min="0">
+    <button onclick="filterListings()">Search</button>
+  </div>
+
+  <!-- Listings Section -->
+  <section>
+    <h2 style="text-align:center;color:#4a4e69;font-size:1.57rem;">Featured Listings</h2>
+    <div id="listings"></div>
+  </section>
+
+  <!-- About Us -->
+  <section id="aboutus">
+    <h2>About LuxeNest Realty</h2>
+    <p>
+      At <b>LuxeNest Realty</b>, we curate exclusive homes for discerning clients. With over 15 years of experience, our award-winning team guides you through every step of your real estate journey—whether you're seeking a luxury penthouse, a family villa, or prime investment properties. We blend market expertise, integrity, and personalized service to ensure every client finds their perfect nest.
+    </p>
+    <p>
+      Our commitment to transparency, innovation, and client satisfaction has made us a trusted choice for real estate excellence.
+    </p>
+  </section>
+
+  <!-- Consultation Booking -->
+  <section id="consultation">
+    <h2>Book a Free Consultation Call</h2>
+    <form id="consultForm" onsubmit="submitConsult(event)">
+      <input type="text" id="consultName" placeholder="Full Name" required>
+      <input type="email" id="consultEmail" placeholder="Email Address" required>
+      <input type="tel" id="consultPhone" placeholder="Phone Number">
+      <textarea id="consultMsg" placeholder="Tell us what you're looking for..." rows="3"></textarea>
+      <button type="submit">Request Callback</button>
+      <div id="consultResult" style="font-weight:600;color:#4a4e69;margin-top:1rem;"></div>
+    </form>
+  </section>
+
+  <!-- Testimonials -->
+  <section id="testimonials">
+    <div class="testimonial">
+      <div class="quote">"LuxeNest turned my dream of a sea-facing penthouse into reality. The process was seamless and the team was always attentive!"</div>
+      <div class="author">– Rajiv Sharma, Mumbai</div>
+    </div>
+    <div class="testimonial">
+      <div class="quote">"Professional, responsive, and truly luxurious properties. I highly recommend LuxeNest Realty for elite investments."</div>
+      <div class="author">– Anisha Patel, Bengaluru</div>
+    </div>
+    <div class="testimonial">
+      <div class="quote">"Their agents understood our needs perfectly, and we closed our villa purchase in just two weeks. Exceptional service!"</div>
+      <div class="author">– Sandeep & Priya, Goa</div>
+    </div>
+  </section>
+
+  <footer style="margin-top: 3rem; background:#22223b; color:#fff; border-radius: 1.3rem 1.3rem 0 0; text-align:center; font-size:1.05rem; padding:1.5rem 0 2.5rem 0;">
+    LuxeNest Realty &copy; 2025. Luxury is a lifestyle.
+  </footer>
+
+  <!-- Fake Listings Data & Filtering JS -->
+  <script>
+    // 3D Animated House using Three.js
+    let renderer, scene, camera, cube;
+    function init3D() {
+      renderer = new THREE.WebGLRenderer({canvas: document.getElementById('three-canvas'), alpha: true});
+      renderer.setClearColor(0x000000, 0);
+      renderer.setSize(480, 340);
+      scene = new THREE.Scene();
+      camera = new THREE.PerspectiveCamera(45, 480/340, 0.1, 1000);
+
+      // Main cube body as a simplified house block
+      const geometry = new THREE.BoxGeometry(2, 1.3, 1.2);
+      const material = new THREE.MeshPhongMaterial({color:0xc9ada7});
+      cube = new THREE.Mesh(geometry, material);
+      scene.add(cube);
+
+      // Roof
+      const roofGeo = new THREE.ConeGeometry(1.25,0.7, 4);
+      const roofMat = new THREE.MeshPhongMaterial({color:0x4a4e69});
+      const roof = new THREE.Mesh(roofGeo, roofMat);
+      roof.position.y = 1.1;
+      roof.rotation.y = Math.PI/4;
+      scene.add(roof);
+
+      // Light
+      const light = new THREE.DirectionalLight(0xffffff, 1);
+      light.position.set(0,3,3);
+      scene.add(light);
+
+      camera.position.z = 4;
+      animate3D();
+    }
+
+    function animate3D(){
+      requestAnimationFrame(animate3D);
+      cube.rotation.y += 0.01;
+      renderer.render(scene, camera);
+    }
+    window.onload = init3D;
+
+    // Fake listing data
+    const listings = [
+      {
+        image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
+        title: "Sea Breeze Penthouse",
+        price: "₹5,40,00,000",
+        location: "Mumbai",
+        rooms: 4,
+        type: "Penthouse",
+        desc: "Panoramic sea views, skydeck, modern luxury, private pool.",
+      },
+      {
+        image: "https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&w=600&q=80",
+        title: "Hilltop Villa Retreat",
+        price: "₹3,80,00,000",
+        location: "Pune",
+        rooms: 5,
+        type: "Villa",
+        desc: "Serene 5-bed villa with infinity pool and gourmet kitchen.",
+      },
+      {
+        image: "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=600&q=80",
+        title: "Skyline Studio",
+        price: "₹1,10,00,000",
+        location: "Bengaluru",
+        rooms: 1,
+        type: "Studio",
+        desc: "Central skyline views, ultra-modern amenities, pet friendly.",
+      },
+      {
+        image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80",
+        title: "Royal Heritage Apartment",
+        price: "₹2,75,00,000",
+        location: "Delhi",
+        rooms: 3,
+        type: "Apartment",
+        desc: "Classic charm, high ceilings, in historic Delhi neighborhood.",
+      },
+      {
+        image: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=600&q=80",
+        title: "Palm Grove Villa",
+        price: "₹4,20,00,000",
+        location: "Goa",
+        rooms: 4,
+        type: "Villa",
+        desc: "Tropical oasis, beach access, lush gardens, full privacy.",
+      },
+      // ... add more as needed
+    ];
+
+    function displayListings(data){
+      const listingsDiv = document.getElementById('listings');
+      listingsDiv.innerHTML = "";
+      if (data.length === 0) {
+        listingsDiv.innerHTML = "<p style='text-align:center;color:#b0413e;font-size:1.2rem;'>No properties found. Try other search options!</p>";
+        return;
+      }
+      data.forEach((l, i) => {
+        listingsDiv.innerHTML += `
+        <div class="listing-card">
+          <div class="listing-image" style="background-image:url('${l.image}');"></div>
+          <h3>${l.title}</h3>
+          <div class="price">${l.price}</div>
+          <div class="desc">${l.desc}</div>
+          <div class="listing-info">
+            <span>📍 ${l.location}</span>
+            <span>🏠 ${l.type}</span>
+            <span>🛏️ ${l.rooms} Beds</span>
+          </div>
+          <button class="consult-btn" onclick="scrollToConsult('${l.title}')">Book Consultation</button>
+        </div>
+        `;
+      });
+    }
+    function filterListings(){
+      const location = document.getElementById('location').value.trim().toLowerCase();
+      const type = document.getElementById('type').value;
+      const minp = parseInt(document.getElementById('minprice').value || "0");
+      const maxp = parseInt(document.getElementById('maxprice').value || "10000000000");
+      // price in ₹X,XX,XX,XXX string, we parse number for logic
+      function parseINR(str){ return parseInt(str.replace(/[^0-9]/g,"")); }
+      let res = listings.filter(l=>
+        (!location || l.location.toLowerCase().includes(location)) &&
+        (!type || l.type === type) &&
+        (parseINR(l.price) >= minp) && (parseINR(l.price) <= maxp)
+      );
+      displayListings(res);
+    }
+    // smooth scroll to consultation form
+    function scrollToConsult(listing){
+      window.scrollTo({top: document.getElementById('consultation').offsetTop-80, behavior: 'smooth'});
+      setTimeout(function(){
+        document.getElementById('consultMsg').value = "I would like to schedule a call about: "+listing;
+      }, 600);
+    }
+    displayListings(listings);
+
+    // Consultation form mock
+    function submitConsult(e){
+      e.preventDefault();
+      const name = document.getElementById('consultName').value;
+      document.getElementById('consultResult').innerHTML =
+        "Thank you, <b>"+name+"</b>. Our agent will contact you soon!";
+      setTimeout(function(){
+        document.getElementById('consultForm').reset();
+      }, 1800);
+    }
+  </script>
+</body>
+</html>
 
