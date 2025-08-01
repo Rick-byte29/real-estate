@@ -4,235 +4,194 @@
   <meta charset="UTF-8">
   <title>LuxeNest Realty – Luxury Homes & Real Estate</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Google Fonts & Icons -->
+  <!-- Fonts & Icons -->
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
-  <!-- 3D Animation JS Library (Three.js for Carousel Homes) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+  <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/1064/1064278.png">
+  <!-- Three.js for 3D hero animation -->
   <script src="https://cdn.jsdelivr.net/npm/three@0.150.1/build/three.min.js"></script>
   <style>
-    body {
-      font-family: 'Open Sans', sans-serif;
-      margin: 0;
-      background: #f8fafc;
-      color: #263238;
+    :root {
+      --bg: #f8fafc;
+      --card: #fff;
+      --primary: #22223b;
+      --accent: #f9957f;
+      --accent2: #c9ada7;
+      --accent3: #4a4e69;
+      --text: #263238;
+      --purple: #9a8c98;
+      --shadow: 0 2px 16px rgba(42,44,74,0.11);
     }
-    header {
-      background: linear-gradient(90deg,#22223b 20%,#4a4e69 100%);
-      color: #fff;
-      padding: 2rem 0 1rem 0;
-      text-align: center;
-      box-shadow: 0 3px 20px rgba(50,50,80,0.1);
+    [data-theme="dark"] {
+      --bg: #23243a;
+      --card: #292b45;
+      --primary: #fff;
+      --accent: #f9957f;
+      --accent2: #917e7e;
+      --accent3: #524d7b;
+      --text: #f8fafc;
+      --purple: #7381a0;
+      --shadow: 0 2px 16px rgba(44,48,81,0.34);
     }
-    header h1 {
-      font-family: 'Montserrat', sans-serif;
-      font-size: 2.5rem;
-      letter-spacing: 2px;
-      margin: 0;
-    }
-    nav {
-      margin-top: 1rem;
-    }
-    nav a {
-      color: #fdfffc;
-      text-decoration: none;
-      margin: 0 1.2rem;
-      font-weight: 600;
-      font-size: 1.13rem;
-      transition: color 0.2s;
-    }
-    nav a:hover { color: #f9957f; }
+    html, body {height:100%;scroll-behavior:smooth;background:var(--bg);color:var(--text);}
+    body {margin:0;font-family:'Open Sans',sans-serif;transition:background .3s, color .3s;}
 
-    /* 3D animation hero section */
-    #threejs-hero {
-      height: 380px;
-      background: linear-gradient(120deg,#e9ecef 60%,#22223b 120%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin-bottom: 1rem;
+    header {
+      background: linear-gradient(90deg,var(--primary) 25%,var(--accent3) 100%);
+      color:#fff;padding:2rem 0 1rem;text-align:center;
+      box-shadow:0 3px 20px rgba(50,50,80,0.07);}
+    header h1 {font-family:'Montserrat',sans-serif;font-size:2.4rem;letter-spacing:2px;margin:0;}
+    nav {margin-top:1rem;}
+    nav a {color:#fdfffc;text-decoration:none;margin:0 1.1rem;font-weight:600;font-size:1.09rem;transition:color .18s;}
+    nav a:hover {color:var(--accent);}
+    .hero-tag {margin:.7rem auto .2rem;color:var(--accent);font-size:1.15rem;}
+    #dark-toggle {
+      position:absolute;right:2rem;top:2.1rem;font-size:1.27rem;cursor:pointer;z-index:98;
+      color:var(--accent2);background:rgba(0,0,0,0.07);border-radius:100%;padding:.28em .44em;transition:background .22s;
     }
+    #dark-toggle:hover {background:var(--accent);}
+    section {max-width:1100px;margin:2.5rem auto;}
+
+    /* 3D hero */
+    #threejs-hero {height:360px;display:flex;align-items:center;justify-content:center;background:linear-gradient(120deg,#e9ecef 60%,var(--primary) 120%);margin-bottom:1rem;}
+    #three-canvas {width:460px;height:320px;background:transparent;}
 
     /* Search Bar */
-    .search-bar {
-      max-width: 720px;
-      margin: 2rem auto;
-      display: flex;
-      background: #fff;
-      border-radius: 1.5rem;
-      box-shadow: 0 2px 8px 0 #dadce0;
-      padding: 1rem;
-      gap: 1rem;
-      align-items: center;
-      justify-content: center;
+    .search-bar {max-width:700px;margin:2rem auto 1rem;display:flex;background:var(--card);border-radius:1.5rem;box-shadow:var(--shadow);padding:1rem;gap:1rem;align-items:center;justify-content:center;}
+    .search-bar input,.search-bar select {padding:.7rem 1rem;border-radius:10px;border:1px solid #ddd;font-size:1rem;flex:1;background:var(--bg);color:var(--text);}
+    .search-bar button {background:var(--primary);color:#fff;border:none;padding:.7rem 1.18rem;border-radius:12px;font-weight:700;cursor:pointer;transition: background .18s;}
+    .search-bar button:hover {background:var(--accent);}
+
+    /* Listings grid */
+    #listings {display:flex;flex-wrap:wrap;max-width:1200px;margin:2rem auto;gap:2.2rem;justify-content:center;}
+    .listing-card {background:var(--card);border-radius:1rem;box-shadow:var(--shadow);width:340px;padding:1.1rem 1.2rem 1.1rem;display:flex;flex-direction:column;transition:transform .2s,box-shadow .2s;cursor:pointer;position:relative;opacity:0;transform:translateY(30px);}
+    .listing-card.visible {opacity:1;transform:translateY(0);}
+    .listing-card:hover {transform:scale(1.04) rotateZ(-2deg);box-shadow:0 10px 38px rgba(30,23,65,0.19);}
+    .listing-image {background:#c5c3c6;border-radius:0.7rem;width:100%;height:170px;margin-bottom:.9rem;background-size:cover;background-position:center;position:relative;}
+    .favorite-btn {
+      position:absolute;right:19px;top:17px;font-size:1.33rem;color:#bebebe;background:rgba(250,250,250,0.72);
+      border:none;border-radius:100%;transition:color .16s;background-blend-mode:overlay;z-index:7;cursor:pointer;padding:.31em .45em;
     }
-    .search-bar input, .search-bar select {
-      padding: 0.7rem 1rem;
-      border-radius: 10px;
-      border: 1px solid #ddd;
-      font-size: 1rem;
-      flex: 1;
-    }
-    .search-bar button {
-      background: #22223b;
-      color: #fff;
-      border: none;
-      padding: 0.7rem 1.3rem;
-      border-radius: 12px;
-      font-weight: 700;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    .search-bar button:hover {
-      background: #f9957f;
+    .favorite-btn.favorited{color:var(--accent);}
+    .listing-card h3 {margin:0 0 0.5rem;}
+    .listing-card .price {color:var(--primary);font-weight:700;font-size:1.13rem;margin-bottom:0.6rem;}
+    .listing-card .desc {font-size:1rem;color:var(--accent3);}
+    .listing-info {display:flex;gap:1.05rem;margin-top:0.65rem;color:var(--text);}
+    .listing-info span {font-size:0.94rem;}
+    .consult-btn {margin-top:.95rem;padding:.54rem 0;background:var(--purple);color:#fff;border:none;border-radius:10px;font-weight:600;transition:background .14s;cursor:pointer;}
+    .consult-btn:hover {background:var(--accent);}
+
+    /* Modal overlay */
+    #modal {display:none;position:fixed;z-index:1100;left:0;top:0;width:100vw;height:100vh;background:rgba(44,48,81,0.3);}
+    #modal .modal-box {background:var(--card);border-radius:1.24em;box-shadow:0 10px 44px #26243c33;max-width:730px;padding:0;position:relative;margin:5.4vh auto 0;}
+    #close-modal {position:absolute;top:12px;right:19px;font-size:2.1rem;color:var(--accent3);background:transparent;border:none;cursor:pointer;}
+    .modal-content {display:flex;flex-direction:row;gap:1.7rem;padding:2.2rem 1.85rem 1.8rem;}
+    .modal-images {flex:1.12;}
+    .modal-details {flex:1.65;padding-left:.4em;}
+    .carousel {position:relative;}
+    .carousel-img {width:100%;height:190px;border-radius:.8em;background-position:center;background-size:cover;}
+    .carousel-dots {text-align:center;margin-top:.65rem;}
+    .carousel-dot {display:inline-block;width:11px;height:11px;border-radius:100%;background:#d1cff0;margin:0 5px;cursor:pointer;}
+    .carousel-dot.selected{background:var(--purple);}
+    .modal-title {margin:0 0 .2em;font-family:'Montserrat',sans-serif;font-size:1.44rem;color:var(--accent3);}
+    .modal-price {font-size:1.14rem;font-weight:600;color:var(--accent);}
+    .modal-desc {margin:.8em 0;padding-bottom:0.7em;border-bottom:1px solid #ececef;}
+    .modal-amenities {display:flex;flex-wrap:wrap;gap:.76rem .95rem;margin-top:.6em;}
+    .amenity {display:flex;align-items:center;gap:6px;font-size:.99rem;color:var(--accent2);}
+    .modal-floorplan {margin:1.1em 0;}
+    .modal-map {border-radius:11px;overflow:hidden;width:95%;height:125px;border:1px solid #e3e3e3;margin:.8em 0 .5em;}
+    .modal-row-info{margin:.9em 0 .25em 0;font-size:.98em;color:var(--accent3);}
+    .modal-actions {display:flex;gap:1.3rem;margin-top:1.05rem;}
+    .modal-actions button {border-radius:7px;background:var(--primary);color:#fff;border:none;padding:.4em 1.1em;font-weight:700;cursor:pointer;transition:background .16s;}
+    .modal-actions button:hover {background:var(--accent);}
+
+    /* Mortgage calculator modal */
+    #mortgage-modal {display:none;position:fixed;z-index:1201;left:0;top:0;width:100vw;height:100vh;background:rgba(44,48,81,0.3);}
+    #mortgage-modal .modal-box {background:var(--card);border-radius:1.2em;box-shadow:0 8px 32px #26243c3d;max-width:375px;position:relative;margin:9vh auto 0;padding:1.4rem 1.7rem 1rem;}
+    #mortgage-close {position:absolute;top:7px;right:14px;font-size:1.7rem;color:var(--accent3);background:transparent;border:none;cursor:pointer;}
+    #mortgage-calc input {width:100%;padding:.45em;margin-bottom:.9em;border-radius:7px;border:1px solid #efefef;font-size:1rem;background:var(--bg);color:var(--text);}
+    #mortgage-calc label {font-size:.98em;margin-bottom:.26em;color:var(--accent3);}
+    #mortgage-calc-output {font-weight:700;color:var(--accent);font-size:1.08em;margin-top:.5em;}
+
+    /* Meet Our Agents */
+    #agents {background:linear-gradient(108deg,var(--accent2) 74%,var(--bg) 100%);border-radius:1.5rem;margin:2.5rem auto 2.2rem;
+      padding:1.6rem 1rem 1rem;box-shadow:0 1px 12px #bfc7ce38;display:flex;gap:2.5rem;flex-wrap:wrap;justify-content:center;}
+    .agent {width:203px;background:var(--card);border-radius:1rem;box-shadow:0 1px 6px #9a8c9860;padding:1.2rem .6rem 1.1rem;margin-bottom:1.1rem;text-align:center;}
+    .agent img {width:70px;height:70px;object-fit:cover;border-radius:50%;border:3px solid var(--accent);}
+    .agent-name {font-weight:700;margin:0.7em 0 .24em 0;font-size:1.14rem;}
+    .agent-role {font-size:0.95rem;color:var(--accent3);}
+    .agent-social a {color:var(--purple);font-size:1.18em;margin:0 .37em;}
+    .agent-social a:hover{color:var(--accent);}
+
+    /* Testimonials Carousel */
+    #testi-section {margin-top:2.2rem;}
+    #testimonials {background:linear-gradient(103deg,var(--bg) 65%,var(--accent2) 100%);border-radius:1.5rem;box-shadow:0 1px 22px #c9ada728;
+      padding:2.2rem 1rem 1.1rem 1rem;margin:auto;display:flex;flex-direction:column;align-items:center;max-width:700px;}
+    .testi-carousel {position:relative;width:84%;min-height:139px;}
+    .testimonial {width:100%;background:var(--card);border-radius:1.1rem;padding:1.25rem 1.37rem;box-shadow:0 3px 13px #e6e6f0;margin:0 auto;text-align:center;}
+    .testi-img {width:40px;height:40px;border-radius:100%;object-fit:cover;margin-bottom:.44em;}
+    .quote {font-style:italic;font-size:1.06rem;margin-bottom:0.8rem;}
+    .author {font-weight:700;color:var(--accent3);font-size:1.02rem;}
+    .testi-arrows {position:absolute;top:50%;width:100%;display:flex;justify-content:space-between;transform:translateY(-50%);}
+    .arrow-btn {background:none;border:none;color:var(--accent3);font-size:1.7em;cursor:pointer;transition:color .18s;}
+    .arrow-btn:hover {color:var(--accent);}
+    .testi-dots {margin:.61em auto 0;text-align:center;}
+    .testi-dot{display:inline-block;width:12px;height:12px;border-radius:100%;background:#d4d6de;margin:0 6px;cursor:pointer;}
+    .testi-dot.selected{background:var(--accent);}
+
+    /* About / Consultation */
+    #aboutus, #consultation {background:var(--card);border-radius:1.1rem;box-shadow:0 2px 10px #e8e8ed;
+      padding:2rem;margin-bottom:2.1rem;}
+
+    /* Consultation */
+    #consultation {max-width:550px;margin-left:auto;margin-right:auto;}
+    #consultation input,#consultation textarea {width:100%;margin:0.47rem 0;padding:0.61rem;border-radius:8px;font-size:1rem;border:1px solid #d1d1e0;background:var(--bg);color:var(--text);}
+    #consultation button {background:var(--primary);color:#fff;border:none;padding:.65rem 1.5rem;border-radius:10px;font-size:1rem;font-weight:700;margin-top:.9rem;cursor:pointer;transition:background .14s;}
+    #consultation button:hover {background:var(--accent);}
+    #consultResult {font-weight:600;color:var(--accent3);margin-top:1rem;}
+
+    /* Skeleton loading */
+    .skeleton {background:linear-gradient(90deg,#f0f0f0 25%,#dadada 50%,#ecebeb 75%);background-size:200% 100%;animation:skeleton 1.55s linear infinite;}
+    @keyframes skeleton {
+      0% {background-position:200% 0;}
+      100% {background-position:-200% 0;}
     }
 
-    /* Listings */
-    #listings {
-      display: flex;
-      flex-wrap: wrap;
-      max-width: 1200px;
-      margin: 2rem auto;
-      gap: 2rem;
-      justify-content: center;
-    }
-    .listing-card {
-      background: #fff;
-      border-radius: 1rem;
-      box-shadow: 0 2px 16px rgba(42,44,74,0.11);
-      width: 340px;
-      padding: 1.3rem;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.2s, box-shadow 0.2s;
-      cursor: pointer;
-    }
-    .listing-card:hover {
-      transform: scale(1.04) rotateZ(-2deg);
-      box-shadow: 0 8px 32px rgba(42,44,74,0.14);
-    }
-    .listing-image {
-      background: #c5c3c6;
-      border-radius: 0.7rem;
-      width: 100%;
-      height: 180px;
-      margin-bottom: 1rem;
-      background-size: cover;
-      background-position: center;
-    }
-    .listing-card h3 {margin:0; margin-bottom:0.6rem;}
-    .listing-card .price {color: #5c5470; font-weight: 700; font-size: 1.2rem; margin-bottom:0.6rem;}
-    .listing-card .desc {font-size:1rem;color:#5e6687;}
-    .listing-info {display:flex; gap:1.1rem; margin-top: 0.7rem; color: #383f51;}
-    .listing-info span {font-size:0.97rem;}
-    .consult-btn {
-      margin-top: 1.1rem;
-      padding: 0.54rem 0;
-      background: #9a8c98;
-      color: #fff;
-      border: none;
-      border-radius: 11px;
-      font-weight: 600;
-      transition: background 0.2s;
-      cursor: pointer;
-    }
-    .consult-btn:hover {background: #f9957f;}
-    section {max-width: 1100px; margin: 2.7rem auto;}
-
-    /* Testimonials */
-    #testimonials {
-      background: linear-gradient(103deg,#f8fafc 80%,#c9ada7 120%);
-      border-radius: 1.5rem;
-      margin: 3rem auto;
-      padding: 2rem 1rem 0.7rem 1rem;
-      box-shadow: 0 2px 18px #c9ada74d;
-      display: flex;
-      gap: 2.4rem;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
-    .testimonial {
-      width: 320px;
-      background: #fff;
-      border-radius: 1rem;
-      padding: 1.4rem 1.1rem;
-      box-shadow: 0 2px 8px #e6e6f0;
-      margin-bottom: 1rem;
-    }
-    .testimonial .quote {
-      font-style:italic;
-      font-size:1.08rem;
-      margin-bottom:0.8rem;
-    }
-    .testimonial .author {
-      font-weight:700;
-      color: #4a4e69;
-      font-size:1.02rem;
-    }
-
-    /* About */
-    #aboutus {
-      background: #fff;
-      border-radius: 1.1rem;
-      box-shadow: 0 2px 8px #e8e8ed;
-      padding: 2rem;
-      margin-bottom: 2rem;
-    }
-    #aboutus h2 {margin-top:0;}
-    /* Consultation Form */
-    #consultation {
-      background: #f3f7fa;
-      border-radius: 1.4rem;
-      padding: 2rem 1.4rem;
-      box-shadow: 0 2px 8px #c9ada74a;
-      max-width: 580px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-    #consultation h2 {margin-top:0;}
-    #consultation input, #consultation textarea {
-      width: 100%;
-      margin: 0.5rem 0;
-      padding: 0.65rem;
-      border-radius: 8px;
-      font-size: 1rem;
-      border: 1px solid #d1d1e0;
-    }
-    #consultation button {
-      background: #22223b;
-      color: #fff;
-      border: none;
-      padding: 0.7rem 1.7rem;
-      border-radius: 10px;
-      font-size: 1rem;
-      font-weight: 700;
-      margin-top: 1rem;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-    #consultation button:hover {background: #f9957f;}
     /* Responsive design */
-    @media (max-width: 900px) {
-      #listings {flex-direction:column; align-items:center;}
-      #testimonials {flex-direction:column;}
+    @media (max-width:900px) {#listings{flex-direction:column;align-items:center;} #testi-section,#testimonials{width:99%;}}
+    @media (max-width:650px) {
+      #threejs-hero {height:210px;}
+      #three-canvas {width:260px;height:120px;}
+      .listing-card {width:92vw;min-width:220px;}
+      .modal-content {flex-direction:column;}
+    }
+    @media (max-width:490px) {
+      .modal-box{width:90vw!important;}
+      .modal-images,.modal-details{width:100%!important;min-width:0;}
+      #testimonials,.testi-carousel,.testimonial{width:100%!important;}
+      #consultation {padding:1.15em;}
     }
   </style>
 </head>
-<body>
+<body data-theme="light">
+  <!-- Dark mode toggle -->
+  <span id="dark-toggle" title="Toggle dark mode"><i class="fas fa-moon"></i></span>
   <header>
     <h1>LuxeNest Realty</h1>
+    <div class="hero-tag">Dream. Discover. Dwell in Luxury.</div>
     <nav>
       <a href="#listings">Listings</a>
+      <a href="#favorites">Favorites</a>
       <a href="#aboutus">About Us</a>
+      <a href="#agents">Agents</a>
       <a href="#consultation">Consultation</a>
       <a href="#testimonials">Testimonials</a>
     </nav>
-    <p style="margin-top:0.7rem;font-size:1.16rem;color:#f9957f;font-weight:600;">
-      Dream. Discover. Dwell in Luxury.
-    </p>
   </header>
 
   <!-- Hero 3D Animation -->
   <div id="threejs-hero">
-    <canvas id="three-canvas" style="width: 480px; height: 340px; background: transparent;"></canvas>
+    <canvas id="three-canvas"></canvas>
   </div>
 
   <!-- Search Bar -->
@@ -252,203 +211,577 @@
 
   <!-- Listings Section -->
   <section>
-    <h2 style="text-align:center;color:#4a4e69;font-size:1.57rem;">Featured Listings</h2>
+    <h2 style="text-align:center;color:var(--accent3);font-size:1.48rem;">Featured Listings</h2>
     <div id="listings"></div>
   </section>
+
+  <!-- Favorites Section -->
+  <section id="favorites">
+    <h2 style="text-align:center;color:var(--accent3);font-size:1.31rem;">Your Favorited Properties <i class="fa fa-heart" style="color:var(--accent);"></i></h2>
+    <div id="favorites-list" style="margin-top:1.7em;"></div>
+  </section>
+
+  <!-- Property Detail Modal -->
+  <div id="modal">
+    <div class="modal-box">
+      <button id="close-modal" aria-label="Close property details">&times;</button>
+      <div class="modal-content">
+        <div class="modal-images">
+          <div class="carousel" id="modal-carousel"></div>
+        </div>
+        <div class="modal-details" id="modal-details"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mortgage Calculator Modal -->
+  <div id="mortgage-modal">
+    <div class="modal-box">
+      <button id="mortgage-close" aria-label="Close mortgage"><i class="fa fa-times"></i></button>
+      <h3 style="font-family:Montserrat;margin-bottom:.8em;">Mortgage Calculator</h3>
+      <form id="mortgage-calc">
+        <label>Property Price (₹)
+          <input type="number" id="m-price" min="10000" required>
+        </label>
+        <label>Down Payment (₹)
+          <input type="number" id="m-down" min="0" required>
+        </label>
+        <label>Loan Term (years)
+          <input type="number" id="m-years" min="1" max="40" required value="20">
+        </label>
+        <label>Interest Rate (%) <small style="color:var(--accent3);">Typical: 8.5</small>
+          <input type="number" id="m-rate" step=".01" min="0" max="40" required value="8.5">
+        </label>
+        <button type="submit">Calculate EMI</button>
+        <div id="mortgage-calc-output"></div>
+      </form>
+    </div>
+  </div>
 
   <!-- About Us -->
   <section id="aboutus">
     <h2>About LuxeNest Realty</h2>
     <p>
-      At <b>LuxeNest Realty</b>, we curate exclusive homes for discerning clients. With over 15 years of experience, our award-winning team guides you through every step of your real estate journey—whether you're seeking a luxury penthouse, a family villa, or prime investment properties. We blend market expertise, integrity, and personalized service to ensure every client finds their perfect nest.
+      <b>LuxeNest Realty</b> curates exclusive homes for discerning clients. With over 15 years of experience, our award-winning team guides you through every step of your real estate journey—whether you're seeking a penthouse, villa, or an elite investment. We blend market expertise, integrity, and personalized service to ensure every client finds the perfect nest.
     </p>
     <p>
       Our commitment to transparency, innovation, and client satisfaction has made us a trusted choice for real estate excellence.
     </p>
   </section>
 
-  <!-- Consultation Booking -->
+  <!-- Meet Our Agents -->
+  <section id="agents">
+    <div>
+      <h2 style="margin-top:0;margin-bottom:.8em;color:var(--accent3);font-size:1.23rem;">Meet Our Agents</h2>
+      <div id="agent-list"></div>
+    </div>
+  </section>
+
+  <!-- Consultation Call -->
   <section id="consultation">
-    <h2>Book a Free Consultation Call</h2>
+    <h2 style="margin-top:0;">Book a Free Consultation Call</h2>
     <form id="consultForm" onsubmit="submitConsult(event)">
       <input type="text" id="consultName" placeholder="Full Name" required>
       <input type="email" id="consultEmail" placeholder="Email Address" required>
-      <input type="tel" id="consultPhone" placeholder="Phone Number">
+      <input type="tel" id="consultPhone" placeholder="Phone Number" pattern="[0-9\-+ ]*">
       <textarea id="consultMsg" placeholder="Tell us what you're looking for..." rows="3"></textarea>
       <button type="submit">Request Callback</button>
-      <div id="consultResult" style="font-weight:600;color:#4a4e69;margin-top:1rem;"></div>
+      <div id="consultResult"></div>
     </form>
   </section>
 
-  <!-- Testimonials -->
-  <section id="testimonials">
-    <div class="testimonial">
-      <div class="quote">"LuxeNest turned my dream of a sea-facing penthouse into reality. The process was seamless and the team was always attentive!"</div>
-      <div class="author">– Rajiv Sharma, Mumbai</div>
-    </div>
-    <div class="testimonial">
-      <div class="quote">"Professional, responsive, and truly luxurious properties. I highly recommend LuxeNest Realty for elite investments."</div>
-      <div class="author">– Anisha Patel, Bengaluru</div>
-    </div>
-    <div class="testimonial">
-      <div class="quote">"Their agents understood our needs perfectly, and we closed our villa purchase in just two weeks. Exceptional service!"</div>
-      <div class="author">– Sandeep & Priya, Goa</div>
+  <!-- Testimonials Carousel -->
+  <section id="testi-section">
+    <h2 style="text-align:center;color:var(--accent3);font-size:1.13rem;">Testimonials</h2>
+    <div id="testimonials">
+      <div class="testi-carousel" id="testi-carousel"></div>
+      <div class="testi-arrows">
+        <button class="arrow-btn" id="testi-prev"><i class="fa fa-chevron-left"></i></button>
+        <button class="arrow-btn" id="testi-next"><i class="fa fa-chevron-right"></i></button>
+      </div>
+      <div class="testi-dots" id="testi-dots"></div>
     </div>
   </section>
 
-  <footer style="margin-top: 3rem; background:#22223b; color:#fff; border-radius: 1.3rem 1.3rem 0 0; text-align:center; font-size:1.05rem; padding:1.5rem 0 2.5rem 0;">
+  <footer style="margin-top:3rem;background:var(--primary);color:#fff;border-radius:1.3rem 1.3rem 0 0;text-align:center;font-size:1.05rem;padding:1.5rem 0 2.1rem;">
     LuxeNest Realty &copy; 2025. Luxury is a lifestyle.
   </footer>
 
-  <!-- Fake Listings Data & Filtering JS -->
   <script>
-    // 3D Animated House using Three.js
-    let renderer, scene, camera, cube;
-    function init3D() {
-      renderer = new THREE.WebGLRenderer({canvas: document.getElementById('three-canvas'), alpha: true});
-      renderer.setClearColor(0x000000, 0);
-      renderer.setSize(480, 340);
-      scene = new THREE.Scene();
-      camera = new THREE.PerspectiveCamera(45, 480/340, 0.1, 1000);
-
-      // Main cube body as a simplified house block
-      const geometry = new THREE.BoxGeometry(2, 1.3, 1.2);
-      const material = new THREE.MeshPhongMaterial({color:0xc9ada7});
-      cube = new THREE.Mesh(geometry, material);
-      scene.add(cube);
-
-      // Roof
-      const roofGeo = new THREE.ConeGeometry(1.25,0.7, 4);
-      const roofMat = new THREE.MeshPhongMaterial({color:0x4a4e69});
-      const roof = new THREE.Mesh(roofGeo, roofMat);
-      roof.position.y = 1.1;
-      roof.rotation.y = Math.PI/4;
-      scene.add(roof);
-
-      // Light
-      const light = new THREE.DirectionalLight(0xffffff, 1);
-      light.position.set(0,3,3);
-      scene.add(light);
-
-      camera.position.z = 4;
-      animate3D();
+  /* ---- DATA (Properties, Agents, Testimonials) ---- */
+  const listings = [
+    {
+      id:1,
+      images: [
+        "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=600&q=80"
+      ],
+      title: "Sea Breeze Penthouse",
+      price: "₹5,40,00,000",
+      loc: "Mumbai",
+      type: "Penthouse",
+      rooms: 4,
+      baths: 4,
+      size: "3200",
+      floor: "41",
+      amenities: ["Private Pool","Sea Facing","Gym","Skydeck"],
+      floorplan: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=400&q=80",
+      desc: "Panoramic sea views, skydeck, elegant spaces, private pool.",
+      map: "https://www.google.com/maps?q=Mumbai&output=embed",
+      video: "https://www.youtube.com/embed/HZQhd1cLQ3Y"
+    },
+    {
+      id:2,
+      images: [
+        "https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=600&q=80"
+      ],
+      title: "Hilltop Villa Retreat",
+      price: "₹3,80,00,000",
+      loc: "Pune",
+      type: "Villa",
+      rooms: 5,
+      baths: 6,
+      size: "5400",
+      floor: "-",
+      amenities: ["Garden","Infinity Pool","Private Parking"],
+      floorplan: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=400&q=80",
+      desc: "Serene 5-bed villa with infinity pool, garden, and gourmet kitchen.",
+      map: "https://www.google.com/maps?q=Pune&output=embed",
+      video: null
+    },
+    {
+      id:3,
+      images: [
+        "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=600&q=80"
+      ],
+      title: "Skyline Studio",
+      price: "₹1,10,00,000",
+      loc: "Bengaluru",
+      type: "Studio",
+      rooms: 1,
+      baths: 1,
+      size: "725",
+      floor: "23",
+      amenities: ["Central AC","Pet Friendly"],
+      floorplan: null,
+      desc: "Central skyline views, ultra-modern amenities, and pet friendly.",
+      map: "https://www.google.com/maps?q=Bengaluru&output=embed",
+      video: null
+    },
+    {
+      id:4,
+      images: [
+        "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80"
+      ],
+      title: "Royal Heritage Apartment",
+      price: "₹2,75,00,000",
+      loc: "Delhi",
+      type: "Apartment",
+      rooms: 3,
+      baths: 3,
+      size: "1920",
+      floor: "9",
+      amenities: ["Classic Interiors","Gym","Children's Play Area"],
+      floorplan: null,
+      desc: "Classic charm, high ceilings, in historic Delhi neighborhood.",
+      map: "https://www.google.com/maps?q=Delhi&output=embed",
+      video: "https://www.youtube.com/embed/T_tGWFJt8NI"
+    },
+    {
+      id:5,
+      images: [
+        "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1523217582562-09d0def993a6?auto=format&fit=crop&w=600&q=80",
+      ],
+      title: "Palm Grove Villa",
+      price: "₹4,20,00,000",
+      loc: "Goa",
+      type: "Villa",
+      rooms: 4,
+      baths: 5,
+      size: "3800",
+      floor: "-",
+      amenities: ["Beach Access","Lush Gardens","Barbecue"],
+      floorplan: null,
+      desc: "Tropical oasis, beach access, lush gardens, full privacy.",
+      map: "https://www.google.com/maps?q=Goa&output=embed",
+      video: null
     }
+  ];
 
-    function animate3D(){
-      requestAnimationFrame(animate3D);
-      cube.rotation.y += 0.01;
-      renderer.render(scene, camera);
+  // Array of agent profiles
+  const agents = [
+    {
+      name:"Rohan Malhotra",role:"Principal Realtor",
+      pic:"https://randomuser.me/api/portraits/men/52.jpg",
+      email:"rohan@luxenest.com",social:{linkedin:"#",twitter:"#"}
+    },
+    {
+      name:"Priya Sharma",role:"Client Relations",
+      pic:"https://randomuser.me/api/portraits/women/47.jpg",
+      email:"priya@luxenest.com",social:{linkedin:"#",twitter:"#"}
+    },
+    {
+      name:"Sandeep J.",role:"Luxury Property Expert",
+      pic:"https://randomuser.me/api/portraits/men/23.jpg",
+      email:"sandeep.j@luxenest.com",social:{linkedin:"#"}
     }
-    window.onload = init3D;
+  ];
 
-    // Fake listing data
-    const listings = [
-      {
-        image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80",
-        title: "Sea Breeze Penthouse",
-        price: "₹5,40,00,000",
-        location: "Mumbai",
-        rooms: 4,
-        type: "Penthouse",
-        desc: "Panoramic sea views, skydeck, modern luxury, private pool.",
-      },
-      {
-        image: "https://images.unsplash.com/photo-1460518451285-97b6aa326961?auto=format&fit=crop&w=600&q=80",
-        title: "Hilltop Villa Retreat",
-        price: "₹3,80,00,000",
-        location: "Pune",
-        rooms: 5,
-        type: "Villa",
-        desc: "Serene 5-bed villa with infinity pool and gourmet kitchen.",
-      },
-      {
-        image: "https://images.unsplash.com/photo-1512918728675-ed5a9ecdebfd?auto=format&fit=crop&w=600&q=80",
-        title: "Skyline Studio",
-        price: "₹1,10,00,000",
-        location: "Bengaluru",
-        rooms: 1,
-        type: "Studio",
-        desc: "Central skyline views, ultra-modern amenities, pet friendly.",
-      },
-      {
-        image: "https://images.unsplash.com/photo-1464983953574-0892a716854b?auto=format&fit=crop&w=600&q=80",
-        title: "Royal Heritage Apartment",
-        price: "₹2,75,00,000",
-        location: "Delhi",
-        rooms: 3,
-        type: "Apartment",
-        desc: "Classic charm, high ceilings, in historic Delhi neighborhood.",
-      },
-      {
-        image: "https://images.unsplash.com/photo-1507089947368-19c1da9775ae?auto=format&fit=crop&w=600&q=80",
-        title: "Palm Grove Villa",
-        price: "₹4,20,00,000",
-        location: "Goa",
-        rooms: 4,
-        type: "Villa",
-        desc: "Tropical oasis, beach access, lush gardens, full privacy.",
-      },
-      // ... add more as needed
-    ];
+  // Array of testimonials
+  const testimonials = [
+    {
+      quote:"LuxeNest turned my dream of a sea-facing penthouse into reality. The process was seamless and the team was always attentive!",
+      author:"Rajiv Sharma, Mumbai",
+      pic:"https://randomuser.me/api/portraits/men/77.jpg"
+    },
+    {
+      quote:"Professional, responsive, and truly luxurious properties. I highly recommend LuxeNest Realty for elite investments.",
+      author:"Anisha Patel, Bengaluru",
+      pic:"https://randomuser.me/api/portraits/women/56.jpg"
+    },
+    {
+      quote:"Their agents understood our needs perfectly, and we closed our villa purchase in just two weeks. Exceptional service!",
+      author:"Sandeep & Priya, Goa",
+      pic:"https://randomuser.me/api/portraits/men/24.jpg"
+    },
+    {
+      quote:"The best realty team in the market—honest advice, no pressure, and spectacular homes. Our family loves the new house!",
+      author:"Meera Desai, Pune",
+      pic:"https://randomuser.me/api/portraits/women/84.jpg"
+    }
+  ];
 
-    function displayListings(data){
-      const listingsDiv = document.getElementById('listings');
-      listingsDiv.innerHTML = "";
-      if (data.length === 0) {
-        listingsDiv.innerHTML = "<p style='text-align:center;color:#b0413e;font-size:1.2rem;'>No properties found. Try other search options!</p>";
-        return;
-      }
-      data.forEach((l, i) => {
-        listingsDiv.innerHTML += `
-        <div class="listing-card">
-          <div class="listing-image" style="background-image:url('${l.image}');"></div>
-          <h3>${l.title}</h3>
-          <div class="price">${l.price}</div>
-          <div class="desc">${l.desc}</div>
-          <div class="listing-info">
-            <span>📍 ${l.location}</span>
-            <span>🏠 ${l.type}</span>
-            <span>🛏️ ${l.rooms} Beds</span>
-          </div>
-          <button class="consult-btn" onclick="scrollToConsult('${l.title}')">Book Consultation</button>
-        </div>
-        `;
+  /* ---- Listing Card Renderer ---- */
+  function parseINR(str){ return parseInt(str.replace(/[^0-9]/g,"")); }
+  function skeletonCard(){return `<div class="listing-card skeleton" style="height:320px;"></div>`;}
+  let favorites = JSON.parse(localStorage.getItem('luxenest-favs')||"[]") || [];
+
+  function showListings(arr, target, withAnimation=true){
+    const container = document.getElementById(target);
+    container.innerHTML = "";
+    if (arr.length==0) {
+      container.innerHTML = "<p style='text-align:center;color:var(--accent);font-size:1.13rem;'>No properties found.</p>"; return;
+    }
+    arr.forEach((obj,i)=>{
+      let favClass = favorites.includes(obj.id) ? "favorited" : "";
+      let card = `<div class="listing-card" tabindex="0" aria-label="View details: ${obj.title}">
+      <button class="favorite-btn ${favClass}" title="Toggle favorite" onclick="toggleFav(event,${obj.id})">
+        <i class="fa${favClass?'s':'r'} fa-heart"></i>
+      </button>
+      <div class="listing-image" style="background-image:url('${obj.images[0]}');"></div>
+      <h3>${obj.title}</h3>
+      <div class="price">${obj.price}</div>
+      <div class="desc">${obj.desc}</div>
+      <div class="listing-info">
+        <span><i class="fa fa-map-marker-alt"></i> ${obj.loc}</span>
+        <span><i class="fa fa-building"></i> ${obj.type}</span>
+        <span><i class="fa fa-bed"></i> ${obj.rooms} Beds</span>
+      </div>
+      <button class="consult-btn" onclick="scrollToConsult('${obj.title}');event.stopPropagation();">Book Consultation</button>
+      </div>`;
+      container.innerHTML += card;
+    });
+
+    // Animate in
+    if (withAnimation) {
+      setTimeout(()=>{
+        Array.from(document.getElementById(target).children).forEach((el,i)=>{
+          setTimeout(()=>{el.classList.add("visible")},90*i+90);
+        });
+      },10);
+    } else {
+      Array.from(document.getElementById(target).children).forEach(el=>el.classList.add("visible"));
+    }
+    // Card click event
+    Array.from(container.children).forEach((card,i)=>{
+      card.addEventListener("click",e=>{
+        if(e.target.classList.contains('favorite-btn')||e.target.closest('.favorite-btn')) return;
+        showModal(arr[i]);
+      });
+    });
+  }
+
+  function filterListings(){
+    const loc = document.getElementById("location").value.trim().toLowerCase();
+    const type = document.getElementById("type").value;
+    const minp = parseInt(document.getElementById("minprice").value || "0");
+    const maxp = parseInt(document.getElementById("maxprice").value || "10000000000");
+    let res = listings.filter(l =>
+      (!loc || l.loc.toLowerCase().includes(loc)) &&
+      (!type || l.type === type) &&
+      (parseINR(l.price)>=minp) && (parseINR(l.price)<=maxp)
+    );
+    showListings(res,"listings");
+  }
+
+  /* ---- Favorites logic ---- */
+  function toggleFav(ev,id){
+    ev.stopPropagation();
+    if (favorites.includes(id)) favorites = favorites.filter(f=>f!=id);
+    else favorites.push(id);
+    localStorage.setItem('luxenest-favs',JSON.stringify(favorites));
+    filterListings();
+    renderFavorites();
+  }
+  function renderFavorites(){
+    let fav = listings.filter(l=>favorites.includes(l.id));
+    showListings(fav,"favorites-list",false);
+  }
+
+  /* ---- Modal Property Details ---- */
+  let curModal = null;
+  function showModal(obj){
+    curModal = obj;
+    // Carousel
+    let carousel = `<div class="carousel-img" style="background-image:url('${obj.images[0]}');"></div>`;
+    if (obj.images.length>1) {
+      carousel = `<div class="carousel-img" id="carousel-image" style="background-image:url('${obj.images[0]}');"></div>
+      <div class="carousel-dots">${obj.images.map((_,i)=>`<span class="carousel-dot${i==0?' selected':''}" data-i="${i}"></span>`).join('')}</div>`;
+    }
+    document.getElementById("modal-carousel").innerHTML=carousel;
+
+    // Carousel logic
+    if (obj.images.length>1) {
+      let imgDiv=document.getElementById("carousel-image"),
+          dots=document.querySelectorAll(".carousel-dot"),c=0,imgs=obj.images;
+      dots.forEach((d,i)=>{
+        d.onclick=()=>{imgDiv.style.backgroundImage=`url('${imgs[i]}')`;
+        dots.forEach(ii=>ii.classList.remove("selected"));d.classList.add("selected");}
       });
     }
-    function filterListings(){
-      const location = document.getElementById('location').value.trim().toLowerCase();
-      const type = document.getElementById('type').value;
-      const minp = parseInt(document.getElementById('minprice').value || "0");
-      const maxp = parseInt(document.getElementById('maxprice').value || "10000000000");
-      // price in ₹X,XX,XX,XXX string, we parse number for logic
-      function parseINR(str){ return parseInt(str.replace(/[^0-9]/g,"")); }
-      let res = listings.filter(l=>
-        (!location || l.location.toLowerCase().includes(location)) &&
-        (!type || l.type === type) &&
-        (parseINR(l.price) >= minp) && (parseINR(l.price) <= maxp)
-      );
-      displayListings(res);
-    }
-    // smooth scroll to consultation form
-    function scrollToConsult(listing){
-      window.scrollTo({top: document.getElementById('consultation').offsetTop-80, behavior: 'smooth'});
-      setTimeout(function(){
-        document.getElementById('consultMsg').value = "I would like to schedule a call about: "+listing;
-      }, 600);
-    }
-    displayListings(listings);
 
-    // Consultation form mock
-    function submitConsult(e){
-      e.preventDefault();
-      const name = document.getElementById('consultName').value;
-      document.getElementById('consultResult').innerHTML =
-        "Thank you, <b>"+name+"</b>. Our agent will contact you soon!";
-      setTimeout(function(){
-        document.getElementById('consultForm').reset();
-      }, 1800);
-    }
+    // Amenities icons
+    const amenityIcons = {
+      "Private Pool":"fa-swimming-pool",
+      "Sea Facing":"fa-water",
+      "Gym":"fa-dumbbell",
+      "Skydeck":"fa-cloud",
+      "Garden":"fa-leaf",
+      "Infinity Pool":"fa-water",
+      "Private Parking":"fa-car",
+      "Central AC":"fa-snowflake",
+      "Pet Friendly":"fa-dog",
+      "Classic Interiors":"fa-couch",
+      "Children's Play Area":"fa-child",
+      "Beach Access":"fa-umbrella-beach",
+      "Lush Gardens":"fa-tree",
+      "Barbecue":"fa-fire"
+    };
+    let amenitiesHtml = obj.amenities.map(a=>{
+      let icon=amenityIcons[a]||"fa-star";
+      return `<span class="amenity"><i class="fa ${icon}"></i>${a}</span>`;
+    }).join("");
+
+    // Floorplan
+    let floorHtml = obj.floorplan ? `<div class="modal-floorplan"><b>Floor plan:</b><br>
+      <img src="${obj.floorplan}" style="max-width:92%;border-radius:9px;margin-top:.4em;">
+    </div>` : "";
+
+    // Video tour
+    let vidHtml = obj.video ? `<div style="margin:.5em 0;"><b>Video Tour:</b><br>
+      <iframe width="92%" height="140" src="${obj.video}" style="border:none;border-radius:9px;margin-top:.3em;" allowfullscreen loading="lazy" title="Video Tour"></iframe>
+    </div>` : "";
+
+    // Map embed
+    let mapHtml = `<div class="modal-map"><iframe src="${obj.map}" width="100%" height="120" frameborder="0" style="border:0" allowfullscreen="" loading="lazy" title="Map"></iframe></div>`;
+
+    document.getElementById('modal-details').innerHTML = `
+      <div class="modal-title">${obj.title}</div>
+      <div class="modal-price">${obj.price}</div>
+      <div class="modal-row-info">
+        <span><b>Type</b>: ${obj.type}</span> &nbsp; | &nbsp;
+        <span><b>Rooms</b>: ${obj.rooms} &#9632; <b>Baths</b>: ${obj.baths||'-'}</span>
+      </div>
+      <div class="modal-row-info">
+        <span><i class="fa fa-ruler-combined"></i> ${obj.size} sqft</span>
+        ${obj.floor && obj.floor!='-'?`&nbsp; | &nbsp;<span><b>Floor</b>: ${obj.floor}</span>`:""}
+      </div>
+      <div class="modal-desc">${obj.desc}</div>
+      <div class="modal-amenities">${amenitiesHtml}</div>
+      ${vidHtml}
+      ${floorHtml}
+      ${mapHtml}
+      <div class="modal-actions" style="margin-bottom:.7em;">
+        <button onclick="showMortgage(event,${parseINR(obj.price)||0})"><i class="fa fa-solid fa-calculator"></i> Mortgage Calc</button>
+        <button onclick="window.open('${obj.images[0]}','_blank')"><i class="fa fa-images"></i> View Photo</button>
+        <button onclick="scrollToConsult('${obj.title}')"><i class="fa fa-phone"></i> Book Call</button>
+      </div>
+    `;
+    document.getElementById("modal").style.display="block";
+    document.body.style.overflow='hidden';
+  }
+  document.getElementById("close-modal").onclick=()=>{document.getElementById("modal").style.display="none";document.body.style.overflow='';};
+
+  /* ---- Mortgage Calculator ---- */
+  function showMortgage(ev, price){
+    if(ev)ev.stopPropagation();
+    document.getElementById("mortgage-modal").style.display="block";
+    document.getElementById("m-price").value=price;
+    document.getElementById("m-down").value=Math.round(price*0.2);
+    document.getElementById("m-calc-output").innerHTML = "";
+    document.getElementById("mortgage-calc-output").innerHTML = "";
+  }
+  document.getElementById("mortgage-close").onclick=()=>{document.getElementById("mortgage-modal").style.display="none";}
+  document.getElementById("mortgage-calc").onsubmit=function(e){
+    e.preventDefault();
+    let P=+document.getElementById("m-price").value - (+document.getElementById("m-down").value||0),
+      term=+document.getElementById("m-years").value,
+      rate=(+document.getElementById("m-rate").value||0)/100/12,
+      n=term*12;
+    if(P<=0||isNaN(P)||n<=0||isNaN(n)||rate<=0) return;
+    let emi = P*rate*Math.pow(1+rate,n)/(Math.pow(1+rate,n)-1);
+    document.getElementById("mortgage-calc-output").innerHTML = "Monthly EMI: <span style='color:var(--accent);font-weight:700;'>₹"+emi.toLocaleString(undefined,{maximumFractionDigits:0})+"</span>";
+  }
+
+  /* ---- Consultation form ---- */
+  function scrollToConsult(prop){
+    document.getElementById('consultMsg').value = prop ? ("I'd like to ask about: "+prop) : "";
+    setTimeout(()=>{document.getElementById('consultation').scrollIntoView({behavior:'smooth'});},60);
+    setTimeout(()=>{document.getElementById('consultName').focus();},650);
+  }
+  function submitConsult(e){
+    e.preventDefault();
+    const name = document.getElementById('consultName').value;
+    document.getElementById('consultResult').innerHTML =
+      "Thank you, <b>"+name+"</b>. Our agent will contact you soon!";
+    setTimeout(function(){
+      document.getElementById('consultForm').reset();
+    }, 1800);
+  }
+
+  /* ---- Agents ---- */
+  function showAgents(){
+    let htm = `<div style="display:flex;flex-wrap:wrap;gap:2.4rem;">`;
+    agents.forEach(a=>{
+      htm += `<div class="agent" tabindex="0" aria-label="Agent: ${a.name}">
+      <img src="${a.pic}" alt="Agent photo">
+      <div class="agent-name">${a.name}</div>
+      <div class="agent-role">${a.role}</div>
+      <div style="font-size:.92rem;color:var(--accent3);margin:.6em 0 .36em 0;">
+        <i class="fa fa-envelope"></i> <a href="mailto:${a.email}" style="color:var(--accent3);text-decoration:none;">${a.email}</a></div>
+      <div class="agent-social">
+        ${a.social.linkedin?`<a href="${a.social.linkedin}" title="LinkedIn" target="_blank"><i class="fab fa-linkedin"></i></a>`:""}
+        ${a.social.twitter?`<a href="${a.social.twitter}" title="Twitter" target="_blank"><i class="fab fa-twitter"></i></a>`:""}
+      </div>
+      </div>`;
+    });
+    htm += "</div>";
+    document.getElementById("agent-list").innerHTML = htm;
+  }
+
+  /* ---- Testimonials Carousel ---- */
+  let testiCur=0,testiInt=null;
+  function showTestimonial(idx){
+    let t = testimonials[idx];
+    document.getElementById("testi-carousel").innerHTML = `
+      <div class="testimonial" tabindex="0">
+        <img class="testi-img" src="${t.pic}" alt="Testimonial photo">
+        <div class="quote">"${t.quote}"</div>
+        <div class="author">${t.author}</div>
+      </div>
+    `;
+    // Dots
+    let dots = testimonials.map((_,i)=>`<span class="testi-dot${i==idx?' selected':''}" data-i="${i}"></span>`).join("");
+    document.getElementById("testi-dots").innerHTML=dots;
+    document.querySelectorAll(".testi-dot").forEach((dot,i)=>{
+      dot.onclick=()=>{testiCur=i;showTestimonial(i);}
+    });
+  }
+  // Prev/Next arrows
+  document.getElementById("testi-prev").onclick=()=>{testiCur = (testiCur-1+testimonials.length)%testimonials.length; showTestimonial(testiCur);}
+  document.getElementById("testi-next").onclick=()=>{testiCur = (testiCur+1)%testimonials.length; showTestimonial(testiCur);}
+  function runTestiInterval(){
+    if(testiInt) clearInterval(testiInt);
+    testiInt = setInterval(()=>{testiCur=(testiCur+1)%testimonials.length;showTestimonial(testiCur);},6100);
+  }
+
+  /* ---- Dark mode toggle ---- */
+  function updateTheme(theme){
+    document.body.setAttribute('data-theme',theme);
+    document.getElementById('dark-toggle').innerHTML = theme=="dark"
+      ? `<i class="fas fa-sun"></i>` : `<i class="fas fa-moon"></i>`;
+    localStorage.setItem("luxenest-theme",theme);
+  }
+  document.getElementById("dark-toggle").onclick=()=>{
+    const cur=document.body.getAttribute('data-theme')||"light";
+    updateTheme(cur=="light"?"dark":"light");
+  };
+
+  /* ---- Fade/slide in on scroll ---- */
+  function animateOnScroll(){
+    let els = document.querySelectorAll(".listing-card:not(.visible)");
+    let wh = window.innerHeight;
+    els.forEach(el=>{
+      let rect=el.getBoundingClientRect();
+      if(rect.top < wh-12) el.classList.add("visible");
+    });
+  }
+  window.addEventListener("scroll",()=>animateOnScroll());
+
+  /* ---- 3D Hero Animation ---- */
+  function init3D(){
+    let c = document.getElementById('three-canvas');
+    let renderer = new THREE.WebGLRenderer({canvas:c,alpha:true});
+    renderer.setClearColor(0x000000,0); renderer.setSize(c.clientWidth,c.clientHeight);
+    let scene = new THREE.Scene();
+    let camera = new THREE.PerspectiveCamera(45, c.clientWidth/c.clientHeight, 0.1, 1000);
+    // House base
+    let baseGeo = new THREE.BoxGeometry(2,1.2,1.19);
+    let baseMat = new THREE.MeshPhongMaterial({color:0xc9ada7});
+    let base = new THREE.Mesh(baseGeo,baseMat); scene.add(base);
+    // Roof
+    let roofG = new THREE.ConeGeometry(1.25,0.7,4), roofM = new THREE.MeshPhongMaterial({color:0x4a4e69});
+    let roof = new THREE.Mesh(roofG,roofM); roof.position.y=1.1; roof.rotation.y=Math.PI/4; scene.add(roof);
+    // Door
+    let doorG=new THREE.BoxGeometry(.3,.55,.05),doorM=new THREE.MeshPhongMaterial({color:0xf9957f});
+    let door=new THREE.Mesh(doorG,doorM); door.position.set(0,-.37, .61); scene.add(door);
+    // Light
+    let light = new THREE.DirectionalLight(0xffffff,0.80);light.position.set(2,5,3);scene.add(light);
+    let amb = new THREE.AmbientLight(0xcccccc,0.47);scene.add(amb);
+    camera.position.z=4;
+    (function anim(){
+      requestAnimationFrame(anim);
+      base.rotation.y +=.01;
+      roof.rotation.y +=.01;
+      renderer.render(scene,camera);
+    })();
+  }
+
+  /* ---- Page Init ---- */
+  function showSkeleton(target,cnt=4){
+    document.getElementById(target).innerHTML=Array(cnt).fill(skeletonCard()).join("");
+  }
+  window.onload=()=>{
+    // Theme
+    let theme = localStorage.getItem("luxenest-theme");
+    if(theme) updateTheme(theme);
+    // 3D Anim
+    init3D();
+    // Show skeletons then real data
+    showSkeleton("listings",4);showSkeleton("favorites-list",0);
+    setTimeout(()=>{
+      filterListings();
+      renderFavorites();
+      animateOnScroll();
+    },650);
+    // Agents
+    showAgents();
+    // Testimonials
+    showTestimonial(testiCur);runTestiInterval();
+    // Modal close on clicking overlay/Esc
+    document.getElementById("modal").onclick=e=>{
+      if (e.target.id=="modal") {document.getElementById("modal").style.display="none";document.body.style.overflow='';}};
+    document.getElementById("mortgage-modal").onclick=e=>{
+      if(e.target.id=="mortgage-modal"){document.getElementById("mortgage-modal").style.display="none";}
+    };
+    // Fade in
+    setTimeout(animateOnScroll,1300);
+    // Pause testimonials auto rotation on focus/hover
+    document.getElementById("testi-carousel").onmouseenter = ()=>clearInterval(testiInt);
+    document.getElementById("testi-carousel").onmouseleave = runTestiInterval;
+  };
   </script>
 </body>
 </html>
-
